@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-lg);
+    }
+    
+    .login-card {
+      width: 100%;
+      max-width: 450px;
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    
+    .login-header {
+      background-color: var(--primary-color);
+      padding: var(--spacing-xl);
+      text-align: center;
+      color: var(--text-light);
+    }
+    
+    .login-header h1 {
+      margin-bottom: 0;
+      color: var(--text-light);
+    }
+    
+    .login-body {
+      padding: var(--spacing-xl);
+    }
+    
+    .login-footer {
+      padding: var(--spacing-lg);
+      text-align: center;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+    
+    .login-icon {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .form-remember {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .form-remember input[type="checkbox"] {
+      width: auto;
+    }
+    
+    .error-message {
+      color: var(--error-color);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    
+    .theme-toggle {
+      position: absolute;
+      top: var(--spacing-md);
+      right: var(--spacing-md);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <button class="theme-toggle">
+      <i class="fas fa-moon"></i>
+    </button>
+    
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-icon">
+          <i class="fas fa-code"></i>
+        </div>
+        <h1>Developer Club</h1>
+        <p>Sign in to your account</p>
+      </div>
+      
+      <div class="login-body">
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            <div class="error-message" id="email-error"></div>
+          </div>
+          
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+            <div class="error-message" id="password-error"></div>
+          </div>
+          
+          <div class="form-remember">
+            <input type="checkbox" id="remember" name="remember">
+            <label for="remember">Remember me</label>
+          </div>
+          
+          <div class="d-flex justify-between align-center mb-md">
+            <a href="#" class="text-primary">Forgot password?</a>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+      </div>
+      
+      <div class="login-footer">
+        <p>Don't have an account? <a href="register.html">Register</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Login page specific JavaScript
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('loginForm');
+      
+      if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const email = document.getElementById('email').value.trim();
+          const password = document.getElementById('password').value.trim();
+          
+          // Reset error messages
+          document.getElementById('email-error').style.display = 'none';
+          document.getElementById('password-error').style.display = 'none';
+          
+          // Validate email and password
+          if (!email) {
+            document.getElementById('email-error').textContent = 'Email is required';
+            document.getElementById('email-error').style.display = 'block';
+            return;
+          }
+          
+          if (!password) {
+            document.getElementById('password-error').textContent = 'Password is required';
+            document.getElementById('password-error').style.display = 'block';
+            return;
+          }
+          
+          // Check if user exists
+          const users = JSON.parse(localStorage.getItem('users')) || [];
+          const user = users.find(u => u.email === email && u.password === password);
+          
+          if (!user) {
+            showToast('Invalid email or password', 'error');
+            return;
+          }
+          
+          // Login successful
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          showToast('Login successful', 'success');
+          
+          // Redirect based on role
+          setTimeout(() => {
+            redirectToDashboard(user.role);
+          }, 1000);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Club Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Landing page specific styles */
+    .landing-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+    
+    .landing-content {
+      max-width: 800px;
+      animation: fadeIn 1s ease;
+    }
+    
+    .landing-logo {
+      font-size: 4rem;
+      color: var(--primary-color);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .landing-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      color: var(--text-primary);
+    }
+    
+    .landing-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .landing-buttons {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: center;
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .landing-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-xl);
+    }
+    
+    .feature-item {
+      padding: var(--spacing-lg);
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .theme-toggle {
+      position: absolute;
+      top: var(--spacing-md);
+      right: var(--spacing-md);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media (max-width: 768px) {
+      .landing-title {
+        font-size: 2.2rem;
+      }
+      
+      .landing-features {
+        grid-template-columns: 1fr;
+      }
+      
+      .landing-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="landing-container">
+    <button class="theme-toggle">
+      <i class="fas fa-moon"></i>
+    </button>
+    
+    <div class="landing-content">
+      <div class="landing-logo">
+        <i class="fas fa-code"></i>
+      </div>
+      <h1 class="landing-title">Developer Club Platform</h1>
+      <p class="landing-subtitle">
+        Connect, collaborate, and grow with fellow developers in a supportive community.
+      </p>
+      
+      <div class="landing-buttons">
+        <a href="login.html" class="btn btn-primary btn-lg">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </a>
+        <a href="register.html" class="btn btn-outline btn-lg">
+          <i class="fas fa-user-plus"></i> Register
+        </a>
+      </div>
+      
+      <div class="landing-features">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Community</h3>
+          <p>Connect with like-minded developers in various domains</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <h3>Leaderboard</h3>
+          <p>Earn points and climb the ranks as you contribute</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <h3>Collaboration</h3>
+          <p>Share ideas and collaborate on projects in real-time</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if user is already logged in
+      const currentUser = getCurrentUser();
+      
+      if (currentUser) {
+        // Redirect to appropriate dashboard
+        setTimeout(() => {
+          redirectToDashboard(currentUser.role);
+        }, 100);
+      }
+    });
+  </script>
+</body>
+</html>

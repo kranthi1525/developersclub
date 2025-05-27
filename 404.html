@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .error-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+    
+    .error-content {
+      max-width: 500px;
+    }
+    
+    .error-code {
+      font-size: 8rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      line-height: 1;
+      margin-bottom: var(--spacing-lg);
+      opacity: 0.8;
+      position: relative;
+    }
+    
+    .error-code::after {
+      content: '404';
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      color: rgba(59, 130, 246, 0.3);
+      z-index: -1;
+    }
+    
+    .error-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      color: var(--text-primary);
+    }
+    
+    .error-message {
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .error-image {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto var(--spacing-xl);
+      opacity: 0.9;
+    }
+    
+    .error-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: center;
+    }
+    
+    .theme-toggle {
+      position: absolute;
+      top: var(--spacing-md);
+      right: var(--spacing-md);
+    }
+    
+    @media (max-width: 576px) {
+      .error-code {
+        font-size: 6rem;
+      }
+      
+      .error-title {
+        font-size: 1.5rem;
+      }
+      
+      .error-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <button class="theme-toggle">
+      <i class="fas fa-moon"></i>
+    </button>
+    
+    <div class="error-content">
+      <div class="error-code">404</div>
+      <h1 class="error-title">Page Not Found</h1>
+      <p class="error-message">
+        The page you're looking for doesn't exist or has been moved.
+        Please check the URL or navigate back to the dashboard.
+      </p>
+      
+      <div class="error-image">
+        <i class="fas fa-code-branch" style="font-size: 120px; color: var(--primary-light);"></i>
+      </div>
+      
+      <div class="error-actions">
+        <a href="javascript:history.back()" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i> Go Back
+        </a>
+        <a href="login.html" class="btn btn-primary">
+          <i class="fas fa-home"></i> Go to Login
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if user is logged in
+      const currentUser = getCurrentUser();
+      
+      // Update dashboard link based on user role
+      const dashboardLink = document.querySelector('.error-actions a.btn-primary');
+      
+      if (currentUser) {
+        dashboardLink.href = currentUser.role === 'Admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+        dashboardLink.innerHTML = '<i class="fas fa-home"></i> Go to Dashboard';
+      }
+    });
+  </script>
+</body>
+</html>

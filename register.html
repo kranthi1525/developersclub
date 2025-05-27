@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .register-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-lg);
+    }
+    
+    .register-card {
+      width: 100%;
+      max-width: 550px;
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    
+    .register-header {
+      background-color: var(--primary-color);
+      padding: var(--spacing-xl);
+      text-align: center;
+      color: var(--text-light);
+    }
+    
+    .register-header h1 {
+      margin-bottom: 0;
+      color: var(--text-light);
+    }
+    
+    .register-body {
+      padding: var(--spacing-xl);
+    }
+    
+    .register-footer {
+      padding: var(--spacing-lg);
+      text-align: center;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+    
+    .register-icon {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+    }
+    
+    .error-message {
+      color: var(--error-color);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    
+    .password-requirements {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: var(--spacing-xs);
+    }
+    
+    .theme-toggle {
+      position: absolute;
+      top: var(--spacing-md);
+      right: var(--spacing-md);
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <button class="theme-toggle">
+      <i class="fas fa-moon"></i>
+    </button>
+    
+    <div class="register-card">
+      <div class="register-header">
+        <div class="register-icon">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <h1>Create an Account</h1>
+        <p>Join our developer community</p>
+      </div>
+      
+      <div class="register-body">
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+            <div class="error-message" id="name-error"></div>
+          </div>
+          
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            <div class="error-message" id="email-error"></div>
+          </div>
+          
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" placeholder="Create a password" required>
+            <div class="error-message" id="password-error"></div>
+            <p class="password-requirements">
+              Password must be at least 6 characters long
+            </p>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="domain" class="form-label">Domain</label>
+              <select id="domain" class="form-control" required>
+                <option value="" selected disabled>Select your domain</option>
+                <option value="Web Development">Web Development</option>
+                <option value="Machine Learning">Machine Learning</option>
+                <option value="App Development">App Development</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="Data Science">Data Science</option>
+                <option value="Game Development">Game Development</option>
+                <option value="DevOps">DevOps</option>
+                <option value="Blockchain">Blockchain</option>
+              </select>
+              <div class="error-message" id="domain-error"></div>
+            </div>
+            
+            <div class="form-group">
+              <label for="role" class="form-label">Role</label>
+              <select id="role" class="form-control" required>
+                <option value="Member" selected>Member</option>
+                <option value="Admin">Admin</option>
+              </select>
+              <div class="error-message" id="role-error"></div>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block mt-lg">Create Account</button>
+        </form>
+      </div>
+      
+      <div class="register-footer">
+        <p>Already have an account? <a href="login.html">Sign In</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Register page specific JavaScript
+    document.addEventListener('DOMContentLoaded', () => {
+      const registerForm = document.getElementById('registerForm');
+      
+      // Populate domain dropdown from localStorage if available
+      const domainSelect = document.getElementById('domain');
+      const domains = JSON.parse(localStorage.getItem('domains')) || [];
+      
+      if (domains.length > 0 && domainSelect) {
+        domainSelect.innerHTML = '<option value="" selected disabled>Select your domain</option>';
+        domains.forEach(domain => {
+          const option = document.createElement('option');
+          option.value = domain;
+          option.textContent = domain;
+          domainSelect.appendChild(option);
+        });
+      }
+      
+      if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const name = document.getElementById('name').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const password = document.getElementById('password').value.trim();
+          const domain = document.getElementById('domain').value;
+          const role = document.getElementById('role').value;
+          
+          // Reset error messages
+          document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+          
+          // Validate fields
+          let hasError = false;
+          
+          if (!name) {
+            document.getElementById('name-error').textContent = 'Name is required';
+            document.getElementById('name-error').style.display = 'block';
+            hasError = true;
+          }
+          
+          if (!email) {
+            document.getElementById('email-error').textContent = 'Email is required';
+            document.getElementById('email-error').style.display = 'block';
+            hasError = true;
+          } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+            document.getElementById('email-error').textContent = 'Invalid email format';
+            document.getElementById('email-error').style.display = 'block';
+            hasError = true;
+          }
+          
+          if (!password) {
+            document.getElementById('password-error').textContent = 'Password is required';
+            document.getElementById('password-error').style.display = 'block';
+            hasError = true;
+          } else if (password.length < 6) {
+            document.getElementById('password-error').textContent = 'Password must be at least 6 characters';
+            document.getElementById('password-error').style.display = 'block';
+            hasError = true;
+          }
+          
+          if (!domain) {
+            document.getElementById('domain-error').textContent = 'Please select a domain';
+            document.getElementById('domain-error').style.display = 'block';
+            hasError = true;
+          }
+          
+          if (hasError) {
+            return;
+          }
+          
+          // Check if email already exists
+          const users = JSON.parse(localStorage.getItem('users')) || [];
+          const emailExists = users.some(user => user.email === email);
+          
+          if (emailExists) {
+            document.getElementById('email-error').textContent = 'This email is already registered';
+            document.getElementById('email-error').style.display = 'block';
+            return;
+          }
+          
+          // Create new user
+          const newUser = {
+            id: generateId(),
+            name,
+            email,
+            password,
+            domain,
+            role,
+            points: 0
+          };
+          
+          // Add user to localStorage
+          users.push(newUser);
+          localStorage.setItem('users', JSON.stringify(users));
+          
+          // Set as current user
+          localStorage.setItem('currentUser', JSON.stringify(newUser));
+          
+          // Show success message
+          showToast('Account created successfully!', 'success');
+          
+          // Redirect to dashboard after a delay
+          setTimeout(() => {
+            redirectToDashboard(role);
+          }, 1500);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

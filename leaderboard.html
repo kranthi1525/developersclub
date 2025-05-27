@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .leaderboard-container {
+      padding-top: var(--spacing-xl);
+      padding-bottom: var(--spacing-xl);
+    }
+    
+    .leaderboard-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .leaderboard-title {
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+      font-size: 2.2rem;
+    }
+    
+    .leaderboard-description {
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .leaderboard-filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+    
+    .filter-domain {
+      min-width: 200px;
+    }
+    
+    .podium {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-bottom: var(--spacing-xl);
+      gap: var(--spacing-lg);
+      padding-top: var(--spacing-xl);
+      padding-bottom: var(--spacing-xl);
+    }
+    
+    .podium-position {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .podium-position:hover {
+      transform: translateY(-10px);
+    }
+    
+    .position-1 {
+      order: 2;
+    }
+    
+    .position-2 {
+      order: 1;
+    }
+    
+    .position-3 {
+      order: 3;
+    }
+    
+    .podium-block {
+      width: 100px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      border-top-left-radius: var(--radius-md);
+      border-top-right-radius: var(--radius-md);
+      color: var(--text-light);
+      font-weight: 600;
+      font-size: 1.5rem;
+      padding-top: var(--spacing-md);
+    }
+    
+    .position-1 .podium-block {
+      height: 200px;
+      background: linear-gradient(135deg, #fbbf24, #d97706);
+    }
+    
+    .position-2 .podium-block {
+      height: 160px;
+      background: linear-gradient(135deg, #94a3b8, #64748b);
+    }
+    
+    .position-3 .podium-block {
+      height: 120px;
+      background: linear-gradient(135deg, #d97706, #b45309);
+    }
+    
+    .podium-user {
+      margin-bottom: var(--spacing-md);
+      position: relative;
+    }
+    
+    .podium-avatar {
+      width: 80px;
+      height: 80px;
+      background-color: var(--bg-primary);
+      border: 3px solid var(--text-light);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--primary-color);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .position-1 .podium-avatar {
+      width: 100px;
+      height: 100px;
+      font-size: 2.5rem;
+      border-color: #fbbf24;
+    }
+    
+    .position-2 .podium-avatar {
+      border-color: #94a3b8;
+    }
+    
+    .position-3 .podium-avatar {
+      border-color: #d97706;
+    }
+    
+    .podium-medal {
+      position: absolute;
+      bottom: -5px;
+      right: -5px;
+      width: 30px;
+      height: 30px;
+      background-color: var(--text-light);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fbbf24;
+      font-size: 1rem;
+      border: 2px solid currentColor;
+      z-index: 2;
+    }
+    
+    .position-1 .podium-medal {
+      color: #fbbf24;
+    }
+    
+    .position-2 .podium-medal {
+      color: #94a3b8;
+    }
+    
+    .position-3 .podium-medal {
+      color: #d97706;
+    }
+    
+    .podium-name {
+      font-weight: 600;
+      margin-top: var(--spacing-sm);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .podium-details {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .podium-points {
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .leaderboard-table th,
+    .leaderboard-table td {
+      padding: var(--spacing-md);
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .leaderboard-table th {
+      background-color: var(--bg-secondary);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .leaderboard-table tr.current-user {
+      background-color: rgba(59, 130, 246, 0.1);
+      font-weight: 600;
+    }
+    
+    .leaderboard-table tr:hover {
+      background-color: var(--bg-tertiary);
+    }
+    
+    .rank-cell {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+    
+    .top-rank {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      margin-right: var(--spacing-md);
+    }
+    
+    .rank-1 {
+      background-color: #fbbf24;
+      color: #fff;
+    }
+    
+    .rank-2 {
+      background-color: #94a3b8;
+      color: #fff;
+    }
+    
+    .rank-3 {
+      background-color: #d97706;
+      color: #fff;
+    }
+    
+    .points-cell {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-xl);
+    }
+    
+    @media (max-width: 768px) {
+      .podium {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-xl);
+      }
+      
+      .position-1, .position-2, .position-3 {
+        order: unset;
+      }
+      
+      .podium-block {
+        width: 180px;
+        height: 60px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-logo">
+        <i class="fas fa-code"></i>
+        <span>DevClub</span>
+      </div>
+      
+      <button class="navbar-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="navbar-links">
+        <a href="user-dashboard.html" class="navbar-link">Dashboard</a>
+        <a href="group-chat.html" class="navbar-link">Group Chat</a>
+        <a href="leaderboard.html" class="navbar-link active">Leaderboard</a>
+        <a href="resources.html" class="navbar-link">Resources</a>
+        <a href="domain-members.html" class="navbar-link">Members</a>
+        <a href="profile.html" class="navbar-link">Profile</a>
+      </div>
+      
+      <div class="d-flex align-center gap-md">
+        <button class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="user-info">
+          <!-- Filled dynamically -->
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  <main class="container leaderboard-container">
+    <div class="leaderboard-header">
+      <h1 class="leaderboard-title">Leaderboard</h1>
+      <p class="leaderboard-description">
+        See how you rank against other members of our developer community. 
+        Earn points by participating in events, completing challenges, and helping others!
+      </p>
+    </div>
+    
+    <div class="leaderboard-filters">
+      <div>
+        <select id="domain-filter" class="form-control filter-domain">
+          <option value="all" selected>All Domains</option>
+          <!-- Domains will be added here -->
+        </select>
+      </div>
+      <div class="d-flex align-center gap-sm">
+        <input type="text" id="search-input" class="form-control" placeholder="Search by name...">
+      </div>
+    </div>
+    
+    <div id="top-three-podium" class="podium">
+      <!-- Top 3 users will be displayed here -->
+    </div>
+    
+    <div class="table-responsive">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Domain</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+          <!-- Leaderboard entries will be added here -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <p>No results found for your search criteria.</p>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = getCurrentUser();
+      
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Get all users and domains
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const domains = JSON.parse(localStorage.getItem('domains')) || [];
+      
+      // Sort users by points (highest first)
+      const sortedUsers = [...users].sort((a, b) => b.points - a.points);
+      
+      // Update domain filter
+      const domainFilter = document.getElementById('domain-filter');
+      domains.forEach(domain => {
+        const option = document.createElement('option');
+        option.value = domain;
+        option.textContent = domain;
+        domainFilter.appendChild(option);
+      });
+      
+      // Setup event listeners
+      domainFilter.addEventListener('change', updateLeaderboard);
+      document.getElementById('search-input').addEventListener('input', updateLeaderboard);
+      
+      // Initial leaderboard population
+      updateLeaderboard();
+      
+      function updateLeaderboard() {
+        const selectedDomain = domainFilter.value;
+        const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+        
+        // Filter users based on domain and search term
+        let filteredUsers = [...sortedUsers];
+        
+        if (selectedDomain !== 'all') {
+          filteredUsers = filteredUsers.filter(user => user.domain === selectedDomain);
+        }
+        
+        if (searchTerm) {
+          filteredUsers = filteredUsers.filter(user => 
+            user.name.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        // Show empty state if no results
+        const emptyState = document.getElementById('empty-state');
+        if (filteredUsers.length === 0) {
+          emptyState.style.display = 'block';
+        } else {
+          emptyState.style.display = 'none';
+        }
+        
+        // Update top three podium
+        updatePodium(filteredUsers.slice(0, 3));
+        
+        // Update leaderboard table
+        updateLeaderboardTable(filteredUsers);
+      }
+      
+      function updatePodium(topUsers) {
+        const podium = document.getElementById('top-three-podium');
+        podium.innerHTML = '';
+        
+        if (topUsers.length === 0) return;
+        
+        // Create podium positions
+        const positions = [
+          { position: 1, class: 'position-1', icon: 'fa-crown' },
+          { position: 2, class: 'position-2', icon: 'fa-medal' },
+          { position: 3, class: 'position-3', icon: 'fa-award' }
+        ];
+        
+        for (let i = 0; i < Math.min(3, topUsers.length); i++) {
+          const user = topUsers[i];
+          const position = positions[i];
+          
+          // Create podium position element
+          const positionEl = document.createElement('div');
+          positionEl.className = `podium-position ${position.class}`;
+          
+          // Get user initials for avatar
+          const initials = user.name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase();
+          
+          positionEl.innerHTML = `
+            <div class="podium-user">
+              <div class="podium-avatar">
+                <span>${initials}</span>
+              </div>
+              <div class="podium-medal">
+                <i class="fas ${position.icon}"></i>
+              </div>
+            </div>
+            <div class="podium-name">${user.name}</div>
+            <div class="podium-details">
+              <span>${user.domain}</span> • 
+              <span class="podium-points">${user.points} pts</span>
+            </div>
+            <div class="podium-block">${position.position}</div>
+          `;
+          
+          podium.appendChild(positionEl);
+        }
+      }
+      
+      function updateLeaderboardTable(users) {
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        leaderboardBody.innerHTML = '';
+        
+        users.forEach((user, index) => {
+          const row = document.createElement('tr');
+          
+          // Highlight current user
+          if (user.id === currentUser.id) {
+            row.classList.add('current-user');
+          }
+          
+          // Rank cell with special styling for top 3
+          let rankHtml = '';
+          if (index < 3) {
+            rankHtml = `<div class="rank-cell">
+              <div class="top-rank rank-${index + 1}">${index + 1}</div>
+            </div>`;
+          } else {
+            rankHtml = `<div class="rank-cell">${index + 1}</div>`;
+          }
+          
+          row.innerHTML = `
+            <td>${rankHtml}</td>
+            <td>${user.name}</td>
+            <td>${user.domain}</td>
+            <td class="points-cell">${user.points}</td>
+          `;
+          
+          leaderboardBody.appendChild(row);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

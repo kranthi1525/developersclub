@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group Chat - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .chat-container {
+      padding-top: var(--spacing-xl);
+      padding-bottom: var(--spacing-xl);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .chat-header {
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: var(--spacing-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .chat-title {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+    
+    .chat-title h3 {
+      margin-bottom: 0;
+    }
+    
+    .chat-icon {
+      width: 40px;
+      height: 40px;
+      background-color: var(--primary-color);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+    }
+    
+    .online-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--success-color);
+      font-size: 0.9rem;
+    }
+    
+    .chat-messages {
+      background-color: var(--bg-primary);
+      height: 500px;
+      overflow-y: auto;
+      padding: var(--spacing-lg);
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+    }
+    
+    .chat-input {
+      background-color: var(--bg-primary);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      padding: var(--spacing-lg);
+      display: flex;
+      gap: var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-top: none;
+    }
+    
+    .chat-input input {
+      flex: 1;
+    }
+    
+    .message {
+      margin-bottom: var(--spacing-md);
+      max-width: 80%;
+    }
+    
+    .message.sent {
+      margin-left: auto;
+    }
+    
+    .message-content {
+      padding: var(--spacing-md);
+      border-radius: var(--radius-lg);
+      position: relative;
+    }
+    
+    .message.received .message-content {
+      background-color: var(--bg-tertiary);
+      border-bottom-left-radius: 0;
+    }
+    
+    .message.sent .message-content {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+      border-bottom-right-radius: 0;
+    }
+    
+    .message-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .message.sent .message-info {
+      justify-content: flex-end;
+    }
+    
+    .message-avatar {
+      width: 30px;
+      height: 30px;
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .message-sender {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .message-time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    .message.sent .message-time {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .chat-date-divider {
+      text-align: center;
+      position: relative;
+      margin: var(--spacing-xl) 0;
+    }
+    
+    .chat-date-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: var(--border-color);
+      z-index: 0;
+    }
+    
+    .chat-date {
+      background-color: var(--bg-primary);
+      padding: 0 var(--spacing-md);
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    @media (max-width: 768px) {
+      .chat-container {
+        padding-top: var(--spacing-md);
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-logo">
+        <i class="fas fa-code"></i>
+        <span>DevClub</span>
+      </div>
+      
+      <button class="navbar-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="navbar-links">
+        <a href="user-dashboard.html" class="navbar-link">Dashboard</a>
+        <a href="group-chat.html" class="navbar-link active">Group Chat</a>
+        <a href="leaderboard.html" class="navbar-link">Leaderboard</a>
+        <a href="resources.html" class="navbar-link">Resources</a>
+        <a href="domain-members.html" class="navbar-link">Members</a>
+        <a href="profile.html" class="navbar-link">Profile</a>
+      </div>
+      
+      <div class="d-flex align-center gap-md">
+        <button class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="user-info">
+          <!-- Filled dynamically -->
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  <main class="chat-container">
+    <div class="chat-header">
+      <div class="chat-title">
+        <div class="chat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div>
+          <h3>DevClub Group Chat</h3>
+          <div class="online-indicator">
+            <i class="fas fa-circle"></i>
+            <span id="online-count">5</span> members online
+          </div>
+        </div>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-outline">
+          <i class="fas fa-info-circle"></i>
+        </button>
+      </div>
+    </div>
+    
+    <div class="chat-messages" id="chat-messages">
+      <!-- Messages will be added here -->
+    </div>
+    
+    <div class="chat-input">
+      <input type="text" id="message-input" class="form-control" placeholder="Type your message...">
+      <button id="send-button" class="btn btn-primary">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = getCurrentUser();
+      
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const chatMessages = document.getElementById('chat-messages');
+      const messageInput = document.getElementById('message-input');
+      const sendButton = document.getElementById('send-button');
+      
+      // Get messages from localStorage
+      let messages = JSON.parse(localStorage.getItem('messages')) || [];
+      
+      // Sort messages by timestamp
+      messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      
+      // Display messages
+      displayMessages(messages);
+      
+      // Scroll to bottom of chat
+      scrollToBottom();
+      
+      // Update online count randomly between 5-15
+      document.getElementById('online-count').textContent = Math.floor(Math.random() * 11) + 5;
+      
+      // Add event listeners
+      sendButton.addEventListener('click', sendMessage);
+      messageInput.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          sendMessage();
+        }
+      });
+      
+      function sendMessage() {
+        const content = messageInput.value.trim();
+        
+        if (!content) return;
+        
+        // Create new message
+        const newMessage = {
+          id: generateId(),
+          userId: currentUser.id,
+          userName: currentUser.name,
+          content: content,
+          timestamp: new Date().toISOString()
+        };
+        
+        // Add to messages
+        messages.push(newMessage);
+        localStorage.setItem('messages', JSON.stringify(messages));
+        
+        // Display new message
+        displayMessage(newMessage);
+        
+        // Clear input
+        messageInput.value = '';
+        
+        // Scroll to bottom
+        scrollToBottom();
+      }
+      
+      function displayMessages(messages) {
+        chatMessages.innerHTML = '';
+        
+        if (messages.length === 0) {
+          chatMessages.innerHTML = '<div class="text-center text-muted p-lg">No messages yet. Be the first to start the conversation!</div>';
+          return;
+        }
+        
+        let currentDate = null;
+        
+        messages.forEach(message => {
+          // Check if we need to add a date divider
+          const messageDate = new Date(message.timestamp).toDateString();
+          
+          if (messageDate !== currentDate) {
+            currentDate = messageDate;
+            addDateDivider(messageDate);
+          }
+          
+          displayMessage(message);
+        });
+      }
+      
+      function displayMessage(message) {
+        const isSentByCurrentUser = message.userId === currentUser.id;
+        const messageType = isSentByCurrentUser ? 'sent' : 'received';
+        
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', messageType);
+        
+        // Get user initials for avatar
+        const initials = message.userName
+          .split(' ')
+          .map(n => n[0])
+          .join('')
+          .toUpperCase();
+        
+        // Format time
+        const messageTime = formatMessageTime(message.timestamp);
+        
+        if (!isSentByCurrentUser) {
+          messageElement.innerHTML = `
+            <div class="message-info">
+              <div class="message-avatar">${initials}</div>
+              <div class="message-sender">${message.userName}</div>
+            </div>
+          `;
+        }
+        
+        messageElement.innerHTML += `
+          <div class="message-content">
+            ${message.content}
+            <div class="message-time">${messageTime}</div>
+          </div>
+        `;
+        
+        chatMessages.appendChild(messageElement);
+      }
+      
+      function addDateDivider(dateString) {
+        const divider = document.createElement('div');
+        divider.classList.add('chat-date-divider');
+        
+        // Format date nicely
+        const formattedDate = new Date(dateString).toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'short',
+          day: 'numeric'
+        });
+        
+        divider.innerHTML = `<span class="chat-date">${formattedDate}</span>`;
+        chatMessages.appendChild(divider);
+      }
+      
+      function formatMessageTime(timestamp) {
+        const date = new Date(timestamp);
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        
+        return `${hours}:${minutes} ${ampm}`;
+      }
+      
+      function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    });
+  </script>
+</body>
+</html>

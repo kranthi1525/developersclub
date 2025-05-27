@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domain Resources - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .resources-container {
+      padding-top: var(--spacing-xl);
+      padding-bottom: var(--spacing-xl);
+    }
+    
+    .resources-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xl);
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+    
+    .resources-filters {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+    
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .resource-card {
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s ease;
+    }
+    
+    .resource-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .resource-header {
+      padding: var(--spacing-lg);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .resource-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      color: var(--text-primary);
+    }
+    
+    .resource-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .resource-body {
+      padding: var(--spacing-lg);
+    }
+    
+    .resource-description {
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .resource-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-xs);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .resource-tag {
+      background-color: var(--bg-tertiary);
+      color: var(--text-secondary);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+    }
+    
+    .resource-footer {
+      padding: var(--spacing-md);
+      background-color: var(--bg-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .resource-actions {
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-md);
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 600px;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .modal-header {
+      padding: var(--spacing-lg);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .modal-body {
+      padding: var(--spacing-lg);
+    }
+    
+    .modal-footer {
+      padding: var(--spacing-lg);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--spacing-md);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-xl);
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+    
+    @media (max-width: 768px) {
+      .resources-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .resources-filters {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-logo">
+        <i class="fas fa-code"></i>
+        <span>DevClub</span>
+      </div>
+      
+      <button class="navbar-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="navbar-links">
+        <a href="user-dashboard.html" class="navbar-link">Dashboard</a>
+        <a href="group-chat.html" class="navbar-link">Group Chat</a>
+        <a href="leaderboard.html" class="navbar-link">Leaderboard</a>
+        <a href="domain-members.html" class="navbar-link">Members</a>
+        <a href="resources.html" class="navbar-link active">Resources</a>
+        <a href="profile.html" class="navbar-link">Profile</a>
+      </div>
+      
+      <div class="d-flex align-center gap-md">
+        <button class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="user-info">
+          <!-- Filled dynamically -->
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  <main class="container resources-container">
+    <div class="resources-header">
+      <h1>Domain Resources</h1>
+      <div class="resources-filters">
+        <select id="domain-filter" class="form-control">
+          <option value="all">All Domains</option>
+          <!-- Domains added dynamically -->
+        </select>
+        <input type="text" id="search-input" class="form-control" placeholder="Search resources...">
+        <button class="btn btn-primary" onclick="showAddResourceModal()">
+          <i class="fas fa-plus"></i> Add Resource
+        </button>
+      </div>
+    </div>
+    
+    <div class="resource-grid" id="resource-grid">
+      <!-- Resources will be added here -->
+    </div>
+    
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <h3>No Resources Found</h3>
+      <p>There are no resources matching your search criteria.</p>
+    </div>
+  </main>
+  
+  <!-- Add Resource Modal -->
+  <div class="modal" id="add-resource-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Resource</h3>
+      </div>
+      <div class="modal-body">
+        <form id="add-resource-form">
+          <div class="form-group">
+            <label for="resource-title" class="form-label">Title</label>
+            <input type="text" id="resource-title" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="resource-description" class="form-label">Description</label>
+            <textarea id="resource-description" class="form-control" rows="4" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="resource-url" class="form-label">Resource URL</label>
+            <input type="url" id="resource-url" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="resource-domain" class="form-label">Domain</label>
+            <select id="resource-domain" class="form-control" required>
+              <!-- Domains added dynamically -->
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="resource-tags" class="form-label">Tags (comma-separated)</label>
+            <input type="text" id="resource-tags" class="form-control" placeholder="e.g., tutorial, video, documentation">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="hideAddResourceModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="addResource()">Add Resource</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = getCurrentUser();
+      
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Initialize resources in localStorage if not present
+      if (!localStorage.getItem('resources')) {
+        const defaultResources = [
+          {
+            id: generateId(),
+            title: 'Web Development Roadmap 2025',
+            description: 'A comprehensive guide to becoming a web developer in 2025.',
+            url: 'https://example.com/webdev-roadmap',
+            domain: 'Web Development',
+            tags: ['tutorial', 'guide', 'roadmap'],
+            userId: currentUser.id,
+            userName: currentUser.name,
+            timestamp: new Date().toISOString()
+          },
+          {
+            id: generateId(),
+            title: 'Machine Learning Basics',
+            description: 'Introduction to fundamental ML concepts and algorithms.',
+            url: 'https://example.com/ml-basics',
+            domain: 'Machine Learning',
+            tags: ['tutorial', 'beginner'],
+            userId: currentUser.id,
+            userName: currentUser.name,
+            timestamp: new Date().toISOString()
+          }
+        ];
+        
+        localStorage.setItem('resources', JSON.stringify(defaultResources));
+      }
+      
+      // Get domains and populate dropdowns
+      const domains = JSON.parse(localStorage.getItem('domains')) || [];
+      const domainFilter = document.getElementById('domain-filter');
+      const resourceDomain = document.getElementById('resource-domain');
+      
+      domains.forEach(domain => {
+        // Add to filter dropdown
+        const filterOption = document.createElement('option');
+        filterOption.value = domain;
+        filterOption.textContent = domain;
+        domainFilter.appendChild(filterOption);
+        
+        // Add to modal dropdown
+        const modalOption = document.createElement('option');
+        modalOption.value = domain;
+        modalOption.textContent = domain;
+        resourceDomain.appendChild(modalOption);
+      });
+      
+      // Add event listeners
+      domainFilter.addEventListener('change', updateResources);
+      document.getElementById('search-input').addEventListener('input', updateResources);
+      
+      // Initial load
+      updateResources();
+    });
+    
+    function updateResources() {
+      const resources = JSON.parse(localStorage.getItem('resources')) || [];
+      const selectedDomain = document.getElementById('domain-filter').value;
+      const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+      
+      // Filter resources
+      let filteredResources = resources;
+      
+      if (selectedDomain !== 'all') {
+        filteredResources = filteredResources.filter(resource => 
+          resource.domain === selectedDomain
+        );
+      }
+      
+      if (searchTerm) {
+        filteredResources = filteredResources.filter(resource => 
+          resource.title.toLowerCase().includes(searchTerm) ||
+          resource.description.toLowerCase().includes(searchTerm) ||
+          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      // Sort by newest first
+      filteredResources.sort((a, b) => 
+        new Date(b.timestamp) - new Date(a.timestamp)
+      );
+      
+      // Update display
+      const resourceGrid = document.getElementById('resource-grid');
+      const emptyState = document.getElementById('empty-state');
+      
+      if (filteredResources.length === 0) {
+        resourceGrid.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      resourceGrid.style.display = 'grid';
+      emptyState.style.display = 'none';
+      
+      resourceGrid.innerHTML = '';
+      
+      filteredResources.forEach(resource => {
+        const card = document.createElement('div');
+        card.className = 'resource-card';
+        
+        card.innerHTML = `
+          <div class="resource-header">
+            <h3 class="resource-title">${resource.title}</h3>
+            <div class="resource-meta">
+              <span><i class="fas fa-user"></i> ${resource.userName}</span>
+              <span><i class="fas fa-folder"></i> ${resource.domain}</span>
+            </div>
+          </div>
+          <div class="resource-body">
+            <p class="resource-description">${resource.description}</p>
+            <div class="resource-tags">
+              ${resource.tags.map(tag => `
+                <span class="resource-tag">${tag}</span>
+              `).join('')}
+            </div>
+          </div>
+          <div class="resource-footer">
+            <div class="resource-actions">
+              <a href="${resource.url}" target="_blank" class="btn btn-sm btn-primary">
+                <i class="fas fa-external-link-alt"></i> Visit
+              </a>
+            </div>
+            <small class="text-muted">
+              ${new Date(resource.timestamp).toLocaleDateString()}
+            </small>
+          </div>
+        `;
+        
+        resourceGrid.appendChild(card);
+      });
+    }
+    
+    function showAddResourceModal() {
+      document.getElementById('add-resource-modal').classList.add('show');
+    }
+    
+    function hideAddResourceModal() {
+      document.getElementById('add-resource-modal').classList.remove('show');
+      document.getElementById('add-resource-form').reset();
+    }
+    
+    function addResource() {
+      const currentUser = getCurrentUser();
+      const title = document.getElementById('resource-title').value.trim();
+      const description = document.getElementById('resource-description').value.trim();
+      const url = document.getElementById('resource-url').value.trim();
+      const domain = document.getElementById('resource-domain').value;
+      const tags = document.getElementById('resource-tags').value
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag);
+      
+      if (!title || !description || !url || !domain) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Create new resource
+      const newResource = {
+        id: generateId(),
+        title,
+        description,
+        url,
+        domain,
+        tags,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Add to localStorage
+      const resources = JSON.parse(localStorage.getItem('resources')) || [];
+      resources.push(newResource);
+      localStorage.setItem('resources', JSON.stringify(resources));
+      
+      // Update display
+      updateResources();
+      
+      // Hide modal and show success message
+      hideAddResourceModal();
+      showToast('Resource added successfully', 'success');
+    }
+  </script>
+</body>
+</html>

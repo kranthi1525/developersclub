@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .admin-dashboard {
+      padding-top: var(--spacing-xl);
+      padding-bottom: var(--spacing-xl);
+    }
+    
+    .welcome-card {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: var(--text-light);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .welcome-card h2, 
+    .welcome-card p {
+      color: var(--text-light);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .welcome-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .stat-card {
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .stat-card-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background-color: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border-radius: var(--radius-full);
+      font-size: 1.5rem;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .stat-card-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+      color: var(--text-primary);
+    }
+    
+    .stat-card-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .table-responsive {
+      overflow-x: auto;
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+      padding: var(--spacing-md);
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .admin-table th {
+      background-color: var(--bg-secondary);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .admin-table tbody tr:hover {
+      background-color: var(--bg-tertiary);
+    }
+    
+    .admin-table .action-cell {
+      display: flex;
+      gap: var(--spacing-sm);
+      flex-wrap: nowrap;
+    }
+    
+    .points-input {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+    
+    .points-input input {
+      width: 60px;
+      padding: 0.35rem 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      text-align: center;
+    }
+    
+    @media (max-width: 992px) {
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .table-responsive {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        border-radius: 0;
+      }
+      
+      .admin-table .action-cell {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-logo">
+        <i class="fas fa-code"></i>
+        <span>DevClub</span>
+      </div>
+      
+      <button class="navbar-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="navbar-links">
+        <a href="admin-dashboard.html" class="navbar-link active">Dashboard</a>
+        <a href="group-chat.html" class="navbar-link">Group Chat</a>
+        <a href="leaderboard.html" class="navbar-link">Leaderboard</a>
+        <a href="domain-members.html" class="navbar-link">Members</a>
+        <a href="profile.html" class="navbar-link">Profile</a>
+      </div>
+      
+      <div class="d-flex align-center gap-md">
+        <button class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="user-info">
+          <!-- Filled dynamically -->
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  <main class="container admin-dashboard">
+    <div class="welcome-card">
+      <h2>Admin Dashboard</h2>
+      <p>Welcome, <span id="admin-name">Admin</span>! You have full control over the Developer Club platform.</p>
+    </div>
+    
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-card-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-card-value" id="total-members">--</div>
+        <div class="stat-card-label">Total Members</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-icon">
+          <i class="fas fa-code-branch"></i>
+        </div>
+        <div class="stat-card-value" id="total-domains">--</div>
+        <div class="stat-card-label">Domains</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-icon">
+          <i class="fas fa-comments"></i>
+        </div>
+        <div class="stat-card-value" id="total-messages">--</div>
+        <div class="stat-card-label">Total Messages</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-icon">
+          <i class="fas fa-award"></i>
+        </div>
+        <div class="stat-card-value" id="average-points">--</div>
+        <div class="stat-card-label">Avg. Points</div>
+      </div>
+    </div>
+    
+    <div class="d-flex justify-between align-center mb-md">
+      <h3>Manage Members</h3>
+      <div class="d-flex gap-sm">
+        <input type="text" id="member-search" class="form-control" placeholder="Search members...">
+      </div>
+    </div>
+    
+    <div class="table-responsive">
+      <table class="admin-table" id="members-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Domain</th>
+            <th>Role</th>
+            <th>Points</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="members-table-body">
+          <!-- Member rows will be added here -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = getCurrentUser();
+      
+      // Check if user is admin
+      if (!currentUser || currentUser.role !== 'Admin') {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Update admin name
+      document.getElementById('admin-name').textContent = currentUser.name;
+      
+      // Get all users
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const messages = JSON.parse(localStorage.getItem('messages')) || [];
+      const domains = JSON.parse(localStorage.getItem('domains')) || [];
+      
+      // Update stats
+      document.getElementById('total-members').textContent = users.length;
+      document.getElementById('total-domains').textContent = domains.length;
+      document.getElementById('total-messages').textContent = messages.length;
+      
+      // Calculate average points
+      const totalPoints = users.reduce((sum, user) => sum + user.points, 0);
+      const avgPoints = users.length > 0 ? Math.round(totalPoints / users.length) : 0;
+      document.getElementById('average-points').textContent = avgPoints;
+      
+      // Populate members table
+      const membersTableBody = document.getElementById('members-table-body');
+      populateUsersTable(users, membersTableBody);
+      
+      // Setup search
+      const searchInput = document.getElementById('member-search');
+      searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const filteredUsers = users.filter(user => 
+          user.name.toLowerCase().includes(searchTerm) || 
+          user.email.toLowerCase().includes(searchTerm) ||
+          user.domain.toLowerCase().includes(searchTerm)
+        );
+        
+        populateUsersTable(filteredUsers, membersTableBody);
+      });
+    });
+    
+    // Function to populate the users table
+    function populateUsersTable(users, tableBody) {
+      tableBody.innerHTML = '';
+      
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+          <td>${user.domain}</td>
+          <td>
+            <span class="badge ${user.role === 'Admin' ? 'badge-warning' : 'badge-primary'}">${user.role}</span>
+          </td>
+          <td>${user.points}</td>
+          <td class="action-cell">
+            <div class="points-input">
+              <input type="number" min="0" max="100" value="10" id="points-${user.id}" class="form-control">
+              <button class="btn btn-sm btn-primary" onclick="assignPoints('${user.id}')">
+                <i class="fas fa-plus"></i> Add
+              </button>
+            </div>
+          </td>
+        `;
+        
+        tableBody.appendChild(row);
+      });
+    }
+    
+    // Function to assign points to a user
+    function assignPoints(userId) {
+      const pointsInput = document.getElementById(`points-${userId}`);
+      const pointsToAdd = parseInt(pointsInput.value, 10);
+      
+      if (isNaN(pointsToAdd) || pointsToAdd < 0) {
+        showToast('Please enter a valid number of points', 'error');
+        return;
+      }
+      
+      // Get users from localStorage
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const userIndex = users.findIndex(user => user.id === userId);
+      
+      if (userIndex !== -1) {
+        // Update user points
+        users[userIndex].points += pointsToAdd;
+        
+        // Update localStorage
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        // Update current user if it's the same user
+        const currentUser = getCurrentUser();
+        if (currentUser && currentUser.id === userId) {
+          currentUser.points = users[userIndex].points;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+        
+        // Update the table
+        const pointsCell = document.querySelector(`#points-${userId}`).closest('tr').cells[4];
+        pointsCell.textContent = users[userIndex].points;
+        
+        // Show success message
+        showToast(`${pointsToAdd} points added to ${users[userIndex].name}`, 'success');
+      }
+    }
+  </script>
+</body>
+</html>

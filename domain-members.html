@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domain Members - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .members-container {
+      padding-top: var(--spacing-xl);
+      padding-bottom: var(--spacing-xl);
+    }
+    
+    .members-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xl);
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+    
+    .filters {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+    
+    .domain-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .domain-pill {
+      background-color: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .domain-pill:hover {
+      background-color: rgba(59, 130, 246, 0.1);
+    }
+    
+    .domain-pill.active {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+    }
+    
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .member-card {
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .member-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .member-header {
+      position: relative;
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+    
+    .member-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-tertiary);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 auto var(--spacing-md);
+    }
+    
+    .member-name {
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .member-role {
+      display: inline-block;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .member-body {
+      padding: 0 var(--spacing-lg) var(--spacing-lg);
+      flex: 1;
+    }
+    
+    .member-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-xs) 0;
+    }
+    
+    .member-stat-label {
+      color: var(--text-secondary);
+    }
+    
+    .member-stat-value {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .member-footer {
+      background-color: var(--bg-secondary);
+      padding: var(--spacing-md);
+      text-align: center;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-xl);
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+    
+    @media (max-width: 768px) {
+      .members-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .filters {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-logo">
+        <i class="fas fa-code"></i>
+        <span>DevClub</span>
+      </div>
+      
+      <button class="navbar-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="navbar-links">
+        <a href="user-dashboard.html" class="navbar-link">Dashboard</a>
+        <a href="group-chat.html" class="navbar-link">Group Chat</a>
+        <a href="leaderboard.html" class="navbar-link">Leaderboard</a>
+        <a href="resources.html" class="navbar-link">Resources</a>
+        <a href="domain-members.html" class="navbar-link active">Members</a>
+        <a href="profile.html" class="navbar-link">Profile</a>
+      </div>
+      
+      <div class="d-flex align-center gap-md">
+        <button class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="user-info">
+          <!-- Filled dynamically -->
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  <main class="container members-container">
+    <div class="members-header">
+      <h1>Domain Members</h1>
+      <div class="filters">
+        <input type="text" id="search-input" class="form-control" placeholder="Search members...">
+        <select id="sort-select" class="form-control">
+          <option value="name">Sort by Name</option>
+          <option value="points" selected>Sort by Points</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="domain-pills" id="domain-pills">
+      <div class="domain-pill active" data-domain="all">All Domains</div>
+      <!-- Domains will be added here -->
+    </div>
+    
+    <div class="members-grid" id="members-grid">
+      <!-- Member cards will be added here -->
+    </div>
+    
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <h3>No Members Found</h3>
+      <p>There are no members matching your search criteria.</p>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = getCurrentUser();
+      
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Get all users and domains
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const domains = JSON.parse(localStorage.getItem('domains')) || [];
+      
+      // Setup domain pills
+      const domainPills = document.getElementById('domain-pills');
+      domains.forEach(domain => {
+        const pill = document.createElement('div');
+        pill.className = 'domain-pill';
+        pill.dataset.domain = domain;
+        pill.textContent = domain;
+        domainPills.appendChild(pill);
+      });
+      
+      // Add event listeners
+      document.querySelectorAll('.domain-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          document.querySelectorAll('.domain-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          updateMembers();
+        });
+      });
+      
+      document.getElementById('search-input').addEventListener('input', updateMembers);
+      document.getElementById('sort-select').addEventListener('change', updateMembers);
+      
+      // Initial load
+      updateMembers();
+      
+      function updateMembers() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+        const sortBy = document.getElementById('sort-select').value;
+        const activeDomain = document.querySelector('.domain-pill.active').dataset.domain;
+        
+        // Filter and sort users
+        let filteredUsers = [...users];
+        
+        // Filter by domain
+        if (activeDomain !== 'all') {
+          filteredUsers = filteredUsers.filter(user => user.domain === activeDomain);
+        }
+        
+        // Filter by search term
+        if (searchTerm) {
+          filteredUsers = filteredUsers.filter(user => 
+            user.name.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        // Sort users
+        if (sortBy === 'name') {
+          filteredUsers.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortBy === 'points') {
+          filteredUsers.sort((a, b) => b.points - a.points);
+        }
+        
+        // Update members grid
+        const membersGrid = document.getElementById('members-grid');
+        membersGrid.innerHTML = '';
+        
+        // Show/hide empty state
+        const emptyState = document.getElementById('empty-state');
+        if (filteredUsers.length === 0) {
+          emptyState.style.display = 'block';
+          return;
+        } else {
+          emptyState.style.display = 'none';
+        }
+        
+        // Create member cards
+        filteredUsers.forEach(user => {
+          const memberCard = document.createElement('div');
+          memberCard.className = 'member-card';
+          
+          // Get user initials for avatar
+          const initials = user.name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase();
+          
+          memberCard.innerHTML = `
+            <div class="member-header">
+              <div class="member-avatar">
+                ${initials}
+              </div>
+              <h3 class="member-name">${user.name}</h3>
+              <span class="badge member-role ${user.role === 'Admin' ? 'badge-warning' : 'badge-primary'}">${user.role}</span>
+            </div>
+            <div class="member-body">
+              <div class="member-stat">
+                <div class="member-stat-label">Domain:</div>
+                <div class="member-stat-value">${user.domain}</div>
+              </div>
+              <div class="member-stat">
+                <div class="member-stat-label">Points:</div>
+                <div class="member-stat-value">${user.points}</div>
+              </div>
+            </div>
+            <div class="member-footer">
+              ${user.id === currentUser.id ? 
+                '<span class="text-primary">This is you</span>' : 
+                '<button class="btn btn-sm btn-outline">View Profile</button>'}
+            </div>
+          `;
+          
+          membersGrid.appendChild(memberCard);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Developer Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styles */
+    .profile-container {
+      padding-top: var(--spacing-xl);
+      padding-bottom: var(--spacing-xl);
+    }
+    
+    .profile-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xl);
+      position: relative;
+      color: var(--text-light);
+    }
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      background-color: var(--text-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    .profile-info h1,
+    .profile-info p {
+      color: var(--text-light);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .profile-badge {
+      display: inline-block;
+      margin-top: var(--spacing-xs);
+    }
+    
+    .profile-edit-btn {
+      position: absolute;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+    }
+    
+    .profile-section {
+      background-color: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-xl);
+      overflow: hidden;
+    }
+    
+    .profile-section-header {
+      padding: var(--spacing-lg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .profile-section-header h2 {
+      margin-bottom: 0;
+      font-size: 1.25rem;
+    }
+    
+    .profile-section-body {
+      padding: var(--spacing-xl);
+    }
+    
+    .profile-data {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-xl);
+    }
+    
+    .data-item {
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .data-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .data-value {
+      font-weight: 500;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+    
+    .tab-button {
+      padding: var(--spacing-md) var(--spacing-xl);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    
+    .tab-button.active {
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .tab-content {
+      padding: var(--spacing-xl);
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .change-password-form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    @media (max-width: 768px) {
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding-bottom: var(--spacing-xl);
+      }
+      
+      .profile-edit-btn {
+        position: static;
+        margin-top: var(--spacing-lg);
+      }
+      
+      .profile-data {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-logo">
+        <i class="fas fa-code"></i>
+        <span>DevClub</span>
+      </div>
+      
+      <button class="navbar-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="navbar-links">
+        <a href="user-dashboard.html" class="navbar-link">Dashboard</a>
+        <a href="group-chat.html" class="navbar-link">Group Chat</a>
+        <a href="leaderboard.html" class="navbar-link">Leaderboard</a>
+        <a href="resources.html" class="navbar-link">Resources</a>
+        <a href="domain-members.html" class="navbar-link">Members</a>
+        <a href="profile.html" class="navbar-link active">Profile</a>
+      </div>
+      
+      <div class="d-flex align-center gap-md">
+        <button class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="user-info">
+          <!-- Filled dynamically -->
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  <main class="container profile-container">
+    <div class="profile-header">
+      <div class="profile-avatar" id="profile-avatar">
+        <!-- User initials will be added here -->
+      </div>
+      <div class="profile-info">
+        <h1 id="profile-name">User Name</h1>
+        <p id="profile-email">user@example.com</p>
+        <span class="badge profile-badge" id="profile-role">Member</span>
+      </div>
+      <button class="btn btn-light profile-edit-btn" id="edit-profile-btn">
+        <i class="fas fa-edit"></i> Edit Profile
+      </button>
+    </div>
+    
+    <div class="profile-section">
+      <div class="profile-section-header">
+        <h2><i class="fas fa-user me-2"></i> Profile Information</h2>
+      </div>
+      
+      <div class="tab-buttons">
+        <button class="tab-button active" data-tab="profile">Profile Details</button>
+        <button class="tab-button" data-tab="password">Change Password</button>
+      </div>
+      
+      <div class="tab-content active" id="profile-tab">
+        <div class="profile-data">
+          <div class="data-item">
+            <div class="data-label">Full Name</div>
+            <div class="data-value" id="data-name">User Name</div>
+          </div>
+          
+          <div class="data-item">
+            <div class="data-label">Email Address</div>
+            <div class="data-value" id="data-email">user@example.com</div>
+          </div>
+          
+          <div class="data-item">
+            <div class="data-label">Domain</div>
+            <div class="data-value" id="data-domain">Web Development</div>
+          </div>
+          
+          <div class="data-item">
+            <div class="data-label">Role</div>
+            <div class="data-value" id="data-role">Member</div>
+          </div>
+          
+          <div class="data-item">
+            <div class="data-label">Points</div>
+            <div class="data-value" id="data-points">0</div>
+          </div>
+          
+          <div class="data-item">
+            <div class="data-label">Member Since</div>
+            <div class="data-value" id="data-joined">January 2025</div>
+          </div>
+        </div>
+        
+        <form id="edit-profile-form" style="display: none;">
+          <div class="form-group">
+            <label for="edit-name" class="form-label">Full Name</label>
+            <input type="text" id="edit-name" class="form-control" placeholder="Enter your full name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-email" class="form-label">Email Address</label>
+            <input type="email" id="edit-email" class="form-control" placeholder="Enter your email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-domain" class="form-label">Domain</label>
+            <select id="edit-domain" class="form-control" required>
+              <option value="" selected disabled>Select your domain</option>
+              <!-- Domains will be added here -->
+            </select>
+          </div>
+          
+          <div class="d-flex gap-md justify-between">
+            <button type="button" class="btn btn-outline" id="cancel-edit-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+      
+      <div class="tab-content" id="password-tab">
+        <form class="change-password-form" id="change-password-form">
+          <div class="form-group">
+            <label for="current-password" class="form-label">Current Password</label>
+            <input type="password" id="current-password" class="form-control" placeholder="Enter your current password" required>
+            <div class="error-message" id="current-password-error"></div>
+          </div>
+          
+          <div class="form-group">
+            <label for="new-password" class="form-label">New Password</label>
+            <input type="password" id="new-password" class="form-control" placeholder="Enter your new password" required>
+            <div class="error-message" id="new-password-error"></div>
+            <p class="password-requirements">Password must be at least 6 characters long</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="confirm-password" class="form-label">Confirm New Password</label>
+            <input type="password" id="confirm-password" class="form-control" placeholder="Confirm your new password" required>
+            <div class="error-message" id="confirm-password-error"></div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">Change Password</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = getCurrentUser();
+      
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Load domains
+      const domains = JSON.parse(localStorage.getItem('domains')) || [];
+      const domainSelect = document.getElementById('edit-domain');
+      
+      domains.forEach(domain => {
+        const option = document.createElement('option');
+        option.value = domain;
+        option.textContent = domain;
+        domainSelect.appendChild(option);
+      });
+      
+      // Set initial values
+      populateProfileData(currentUser);
+      
+      // Tab switching
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+          
+          button.classList.add('active');
+          document.getElementById(`${button.dataset.tab}-tab`).classList.add('active');
+        });
+      });
+      
+      // Edit profile
+      document.getElementById('edit-profile-btn').addEventListener('click', () => {
+        document.getElementById('profile-tab').querySelector('.profile-data').style.display = 'none';
+        document.getElementById('edit-profile-form').style.display = 'block';
+        
+        // Set form values
+        document.getElementById('edit-name').value = currentUser.name;
+        document.getElementById('edit-email').value = currentUser.email;
+        document.getElementById('edit-domain').value = currentUser.domain;
+      });
+      
+      document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+        document.getElementById('profile-tab').querySelector('.profile-data').style.display = 'grid';
+        document.getElementById('edit-profile-form').style.display = 'none';
+      });
+      
+      // Handle profile update
+      document.getElementById('edit-profile-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('edit-name').value.trim();
+        const email = document.getElementById('edit-email').value.trim();
+        const domain = document.getElementById('edit-domain').value;
+        
+        // Get all users
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const userIndex = users.findIndex(user => user.id === currentUser.id);
+        
+        if (userIndex !== -1) {
+          // Check if email is already taken by another user
+          const emailExists = users.some(user => 
+            user.id !== currentUser.id && user.email === email
+          );
+          
+          if (emailExists) {
+            showToast('This email is already in use by another account', 'error');
+            return;
+          }
+          
+          // Update user data
+          users[userIndex].name = name;
+          users[userIndex].email = email;
+          users[userIndex].domain = domain;
+          
+          // Update localStorage
+          localStorage.setItem('users', JSON.stringify(users));
+          localStorage.setItem('currentUser', JSON.stringify(users[userIndex]));
+          
+          // Update display
+          populateProfileData(users[userIndex]);
+          
+          // Hide edit form
+          document.getElementById('profile-tab').querySelector('.profile-data').style.display = 'grid';
+          document.getElementById('edit-profile-form').style.display = 'none';
+          
+          // Show success message
+          showToast('Profile updated successfully', 'success');
+          
+          // Update user info in navbar
+          updateUserInfo();
+        }
+      });
+      
+      // Handle password change
+      document.getElementById('change-password-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Reset error messages
+        document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+        
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        // Validate inputs
+        if (currentPassword !== currentUser.password) {
+          document.getElementById('current-password-error').textContent = 'Current password is incorrect';
+          document.getElementById('current-password-error').style.display = 'block';
+          return;
+        }
+        
+        if (newPassword.length < 6) {
+          document.getElementById('new-password-error').textContent = 'Password must be at least 6 characters long';
+          document.getElementById('new-password-error').style.display = 'block';
+          return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+          document.getElementById('confirm-password-error').textContent = 'Passwords do not match';
+          document.getElementById('confirm-password-error').style.display = 'block';
+          return;
+        }
+        
+        // Update password
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const userIndex = users.findIndex(user => user.id === currentUser.id);
+        
+        if (userIndex !== -1) {
+          users[userIndex].password = newPassword;
+          
+          // Update localStorage
+          localStorage.setItem('users', JSON.stringify(users));
+          localStorage.setItem('currentUser', JSON.stringify(users[userIndex]));
+          
+          // Reset form
+          document.getElementById('change-password-form').reset();
+          
+          // Show success message
+          showToast('Password updated successfully', 'success');
+        }
+      });
+    });
+    
+    // Function to populate profile data
+    function populateProfileData(user) {
+      // Set header data
+      document.getElementById('profile-name').textContent = user.name;
+      document.getElementById('profile-email').textContent = user.email;
+      document.getElementById('profile-role').textContent = user.role;
+      document.getElementById('profile-role').className = `badge profile-badge ${user.role === 'Admin' ? 'badge-warning' : 'badge-primary'}`;
+      
+      // Set avatar with initials
+      const initials = user.name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase();
+      document.getElementById('profile-avatar').textContent = initials;
+      
+      // Set profile data
+      document.getElementById('data-name').textContent = user.name;
+      document.getElementById('data-email').textContent = user.email;
+      document.getElementById('data-domain').textContent = user.domain;
+      document.getElementById('data-role').textContent = user.role;
+      document.getElementById('data-points').textContent = user.points;
+      
+      // Set joined date (mock data)
+      document.getElementById('data-joined').textContent = 'January 2025';
+    }
+  </script>
+</body>
+</html>
